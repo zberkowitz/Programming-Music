@@ -1,0 +1,58 @@
+<html>
+<head>
+	<style>
+		td {
+			text-align: center;
+			padding-right: 50px;
+		}
+	</style>
+	<script type="text/javascript" src="Tone.min.js"></script>
+	<script type="text/javascript" src= "nexusUI.js"></script>
+</head>
+<body>
+	<table>
+		<tr>
+			<td>
+				<h4>Sine Wave</h4>
+			</td>
+			<td>
+				<h4>Adding Partials of a Sawtooth Wave</h4>
+			</td>
+			<td>
+				<h4>Phase Cancellation</h4>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<canvas id="sineToggle" nx="toggle"></canvas>
+				<canvas id="sineFreq" nx="slider" width="50" height="25"></canvas>
+				<canvas id="sineVol" nx="slider" height="50" width="25"></canvas>
+			</td>
+			<td>
+				<canvas id="sawToggle" nx="toggle"></canvas>
+				<canvas id="sawPartial" nx="tabs" height="50" width="400"></canvas>
+			</td>
+			<td style="text-align:left;">
+				<canvas id="phaseToggle" nx="toggle"></canvas>
+				<canvas id="phaseShift" nx="slider" width="75" height="25"></canvas>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p id="freqLabel">Frequency: 440Hz</p>
+			</td>
+			<td>
+			</td>
+			<td>
+				<p id="phaseLabel">Oscillator 2 Phase: 0&deg;</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p id="volLabel">Level: -12 dB</p>
+			</td>
+		</tr>
+	</table>
+	<script type="text/javascript" src="SoundBasics.js"></script>
+</body>
+</html>
