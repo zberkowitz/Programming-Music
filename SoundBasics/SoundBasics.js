@@ -24,6 +24,9 @@ var phaseOsc2 = new Tone.Oscillator({
 nx.onload = function(){
 	nx.sendsTo("js");
 	
+	nx.colorize("fill", "#B4AEA2");
+	nx.colorize("accent", "#fccf22");
+	
 	sineFreq.hslider = true;
 	sineFreq.draw();
 	
@@ -32,6 +35,9 @@ nx.onload = function(){
 	
 	phaseShift.hslider = true;
 	phaseShift.draw();
+	
+	phaseToggle.options = ['Off', 'Sine', 'Tri'];
+	phaseToggle.init();
 	
 	sineFreq.set({
 		value: 0.330
@@ -78,18 +84,29 @@ nx.onload = function(){
 	});
 	
 	phaseToggle.on('*', function(data){
-		if (data.value == 1){
-			phaseOsc1.start();
-			phaseOsc2.start();
-		}else if (data.value == 0){
+		if (data.index == 0){
 			phaseOsc1.stop();
 			phaseOsc2.stop();
+		}else if (data.index == 1){
+			phaseOsc1.type = "sine";
+			phaseOsc2.type = "sine";
+			if (phaseOsc1.state == "stopped"){
+				phaseOsc1.start();
+				phaseOsc2.start();
+			}
+		}else if (data.index == 2){
+			phaseOsc1.type = "triangle";
+			phaseOsc2.type = "triangle";
+			if (phaseOsc1.state == "stopped"){
+				phaseOsc1.start();
+				phaseOsc2.start();
+			}
 		}
 	});
 	
 	phaseShift.on('*', function(data){
 		var phase = Math.ceil(data.value * 180);
 		phaseOsc2.phase = phase;
-		document.getElementById("phaseLabel").innerHTML = "Oscillator 2 Phase: " + phase + "&deg;";
+		document.getElementById("phaseLabel").innerHTML = phase + "&deg; Out of Phase";
 	})
 }
