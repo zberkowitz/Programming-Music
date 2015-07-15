@@ -1,58 +1,128 @@
 <html>
 <head>
+	<title>Programming Music: Sound Basics</title>
 	<style>
+		.scope {
+			width: 300px;
+			height: 150px;
+			background-color: #000000;
+		}
+		.gui {
+			width: 500px;
+		}
+		
+		table {
+			border: 1px solid black;
+		}
+		
 		td {
-			text-align: center;
-			padding-right: 50px;
+			border: 1px dotted black;
 		}
 	</style>
+	
+	<link href="shCore.css" rel="stylesheet" type="text/css" />
+	<link href="shThemeDefault.css" rel="stylesheet" type="text/css" />
+	
 	<script type="text/javascript" src="Tone.min.js"></script>
-	<script type="text/javascript" src= "nexusUI.js"></script>
+	<script type="text/javascript" src="nexusUI.js"></script>
+	<script type="text/javascript" src="shCore.js"></script>
+	<script type="text/javascript" src="shBrushJScript.js"></script>
+	<script type="text/javascript" src="wavy-jones.js"></script>
 </head>
 <body>
-	<table width="1024px">
+	<h1 style="text-align: center;">Sound Basics</h1>
+	<table>
+		<h3>Sine Wave</h3>
 		<tr>
 			<td>
-				<h4>Sine Wave</h4>
+				<div class="gui">
+					<canvas id="sineToggle" nx="toggle"></canvas>
+					<canvas id="sineFreq" nx="slider" width="50" height="25"></canvas>
+					<canvas id="sineVol" nx="slider" height="50" width="25"></canvas>
+					<p id="freqLabel">Frequency: 440Hz</p>
+					<p id="volLabel">Level: -12 dB</p>
+					<div id="oscilloscope1" class="scope"></div>
+				</div>
 			</td>
+			</div>
 			<td>
-				<h4>Adding Partials of a Sawtooth Wave</h4>
-			</td>
-			<td>
-				<h4>Phase Cancellation</h4>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<canvas id="sineToggle" nx="toggle"></canvas>
-				<canvas id="sineFreq" nx="slider" width="50" height="25"></canvas>
-				<canvas id="sineVol" nx="slider" height="50" width="25"></canvas>
-			</td>
-			<td>
-				<canvas id="sawToggle" nx="toggle"></canvas>
-				<canvas id="sawPartial" nx="tabs" height="50" width="400"></canvas>
-			</td>
-			<td>
-				<canvas id="phaseToggle" nx="tabs" height="50" width="150"></canvas>
-				<canvas id="phaseShift" nx="slider" width="75" height="25"></canvas>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<p id="freqLabel">Frequency: 440Hz</p>
-			</td>
-			<td>
-			</td>
-			<td>
-				<p id="phaseLabel">0&deg; Out of Phase</p>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<p id="volLabel">Level: -12 dB</p>
+				<pre class="brush: js">
+//Frequency slider function
+sineFreq.on('*', function(data){
+	//Scale and offset
+	var frequency = data.value * 1000 + 100; 
+	sineOsc.frequency.value = frequency;
+	//set HTML label
+	document.getElementById("freqLabel").innerHTML = "Frequency: " + frequency + "Hz"; 
+});
+
+//Volume slider function
+sineVol.on('*', function(data){
+	/*Trickier scale and offset (0-1 mapped to -60-0).  Math.ceil is a built-in 
+	JS function for rounding.*/
+	var volume = Math.ceil((data.value * -1 + 1) * -60);
+	sineOsc.volume.value = volume;
+	document.getElementById("volLabel").innerHTML = "Level: " + volume + " dB";
+});
+				</pre>
 			</td>
 		</tr>
 	</table>
+	<table>
+		<h3>Adding Partials of a Sawtooth Wave</h3>
+		<tr>
+			<td>
+				<div class="gui">
+					<canvas id="sawToggle" nx="toggle"></canvas>
+					<canvas id="sawPartial" nx="tabs" height="50" width="400"></canvas>
+					<div id="oscilloscope2" class="scope"></div>
+				</div>
+			</td>
+			<td>
+				<pre class="brush: js">
+/* 
+Sawtooth partial selector function.  Tone.js has
+built in functionality that allows us to specify how many 
+overtones (partials) the wave will have.
+*/ 
+sawPartial.on('*', function(data){
+	sawOsc.type = "sawtooth" + (data.index + 2);
+});
+				</pre>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<h3>Phase Cancellation</h3>
+		<tr>
+			<td>
+				<div class="gui">
+					<canvas id="phaseToggle" nx="tabs" height="50" width="150"></canvas>
+					<canvas id="phaseShift" nx="slider" width="75" height="25"></canvas><br>
+					<p id="phaseLabel">0&deg; Out of Phase</p>
+					<div id="oscilloscope3" class="scope"></div>
+				</div>
+			</td>
+			<td>
+				<pre class="brush: js">
+/*
+Phase slider function.  There are actually 2 oscillators playing at the 
+same time.  The slider changes the second oscillator's phase from 0&deg; - 180&deg; 
+*/
+phaseShift.on('*', function(data){
+	var phase = Math.ceil(data.value * 180);
+	phaseOsc2.phase = phase;
+	document.getElementById("phaseLabel").innerHTML = phase + "&deg; Out of Phase";
+});
+				</pre>
+			</td>
+		</tr>
+	</table>
+	
 	<script type="text/javascript" src="SoundBasics.js"></script>
+	
+	<script type="text/javascript">
+		SyntaxHighlighter.all()
+	</script>
 </body>
 </html>

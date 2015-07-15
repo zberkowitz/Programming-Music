@@ -1,25 +1,37 @@
+var myOscilloscope1 = new WavyJones(Tone.context, 'oscilloscope1');
+var myOscilloscope2 = new WavyJones(Tone.context, 'oscilloscope2');
+var myOscilloscope3 = new WavyJones(Tone.context, 'oscilloscope3');
+
+myOscilloscope1.connect(Tone.Master);
+myOscilloscope2.connect(Tone.Master);
+myOscilloscope3.connect(Tone.Master);
+
+myOscilloscope1.lineColor = "#FFFF00";
+myOscilloscope2.lineColor = "#FFFF00";
+myOscilloscope3.lineColor = "#FFFF00";
+
 var sineOsc = new Tone.Oscillator({
 	frequency: 440, 
 	type: "sine",
 	volume: -12
-}).toMaster();
+}).connect(myOscilloscope1);
 
 var sawOsc = new Tone.Oscillator({
 	frequency: 440,
 	volume: -12
-}).toMaster();
+}).connect(myOscilloscope2);
 
 var phaseOsc1 = new Tone.Oscillator({
 	frequency: 440,
 	type: "sine",
 	volume: -12
-}).toMaster();
+}).connect(myOscilloscope3);
 
 var phaseOsc2 = new Tone.Oscillator({
 	frequency: 440,
 	type: "sine",
 	volume: -12
-}).toMaster();
+}).connect(myOscilloscope3);
 
 nx.onload = function(){
 	nx.sendsTo("js");
@@ -80,7 +92,7 @@ nx.onload = function(){
 	});
 	
 	sawPartial.on('*', function(data){
-		sawOsc.type = "sawtooth" + (parseInt(data.text) + 1);
+		sawOsc.type = "sawtooth" + (data.index + 2);
 	});
 	
 	phaseToggle.on('*', function(data){
