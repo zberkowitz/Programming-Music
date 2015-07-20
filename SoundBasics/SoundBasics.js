@@ -23,13 +23,11 @@ var sawOsc = new Tone.Oscillator({
 
 var phaseOsc1 = new Tone.Oscillator({
 	frequency: 440,
-	type: "sine",
 	volume: -12
 }).connect(myOscilloscope3);
 
 var phaseOsc2 = new Tone.Oscillator({
 	frequency: 440,
-	type: "sine",
 	volume: -12
 }).connect(myOscilloscope3);
 
@@ -39,27 +37,27 @@ nx.onload = function(){
 	nx.colorize("fill", "#B4AEA2");
 	nx.colorize("accent", "#fccf22");
 	
-	sineFreq.hslider = true;
-	sineFreq.draw();
+	sineFreqSlider.hslider = true;
+	sineFreqSlider.draw();
 	
-	sawPartial.options = ['1', '2', '3', '4', '5', '6', '7', '8'];
-	sawPartial.init();
+	sawPartialNumber.decimalPlaces = 0;
 	
-	phaseShift.hslider = true;
-	phaseShift.draw();
+	phaseSlider.hslider = true;
+	phaseSlider.draw();
 	
-	phaseToggle.options = ['Off', 'Sine', 'Tri'];
-	phaseToggle.init();
-	
-	sineFreq.set({
+	sineFreqSlider.set({
 		value: 0.330
 	}, true);
 	
-	sineVol.set({
+	sineVolSlider.set({
 		value: 0.8
 	}, true)
 	
-	phaseShift.set({
+	sawPartialNumber.set({
+		value: 1
+	}, true);
+	
+	phaseSlider.set({
 		value: 0
 	}, true);
 	
@@ -71,13 +69,13 @@ nx.onload = function(){
 		}
 	});
 	
-	sineFreq.on('*', function(data){
+	sineFreqSlider.on('*', function(data){
 		var frequency = data.value * 1000 + 100;
 		sineOsc.frequency.value = frequency;
 		document.getElementById("freqLabel").innerHTML = "Frequency: " + frequency + "Hz";
 	});
 	
-	sineVol.on('*', function(data){
+	sineVolSlider.on('*', function(data){
 		var volume = Math.ceil((data.value * -1 + 1) * -60);
 		sineOsc.volume.value = volume;
 		document.getElementById("volLabel").innerHTML = "Level: " + volume + " dB";
@@ -91,32 +89,44 @@ nx.onload = function(){
 		}
 	});
 	
-	sawPartial.on('*', function(data){
-		sawOsc.type = "sawtooth" + (data.index + 2);
-	});
-	
-	phaseToggle.on('*', function(data){
-		if (data.index == 0){
-			phaseOsc1.stop();
-			phaseOsc2.stop();
-		}else if (data.index == 1){
-			phaseOsc1.type = "sine";
-			phaseOsc2.type = "sine";
-			if (phaseOsc1.state == "stopped"){
-				phaseOsc1.start();
-				phaseOsc2.start();
-			}
-		}else if (data.index == 2){
-			phaseOsc1.type = "triangle";
-			phaseOsc2.type = "triangle";
-			if (phaseOsc1.state == "stopped"){
-				phaseOsc1.start();
-				phaseOsc2.start();
-			}
+	sawPartialNumber.on('*', function(data){
+		if (data.value >= 1){
+			sawOsc.type = "sawtooth" + (data.value + 1);
 		}
 	});
 	
-	phaseShift.on('*', function(data){
+	phaseSineToggle.on('*', function(data){
+		if (data.value == 1){
+			phaseOsc1.type = "sine";
+			phaseOsc2.type = "sine";
+			phaseOsc1.start();
+			phaseOsc2.start();
+			phaseTriToggle.set({
+				value: 0
+			}, false);
+		}else if (data.value == 0){
+			phaseOsc1.stop();
+			phaseOsc2.stop();
+		}
+	});
+	
+	phaseTriToggle.on('*', function(data){
+		if (data.value == 1){
+			phaseOsc1.type = "triangle";
+			phaseOsc2.type = "triangle";
+			phaseOsc1.start();
+			phaseOsc2.start();
+			phaseSineToggle.set({
+				value: 0
+			}, false);
+		}else if (data.value == 0){
+			phaseOsc1.stop();
+			phaseOsc2.stop();
+		}
+	});
+
+	
+	phaseSlider.on('*', function(data){
 		var phase = Math.ceil(data.value * 180);
 		phaseOsc2.phase = phase;
 		document.getElementById("phaseLabel").innerHTML = phase + "&deg; Out of Phase";
