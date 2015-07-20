@@ -1,35 +1,46 @@
-var myOscilloscope1 = new WavyJones(Tone.context, 'oscilloscope1');
-var myOscilloscope2 = new WavyJones(Tone.context, 'oscilloscope2');
-var myOscilloscope3 = new WavyJones(Tone.context, 'oscilloscope3');
+var scope1 = new WavyJones(Tone.context, 'oscilloscope1');
+var scope2 = new WavyJones(Tone.context, 'oscilloscope2');
+var scope3 = new WavyJones(Tone.context, 'oscilloscope3');
+var scope4 = new WavyJones(Tone.context, 'oscilloscope4');
 
-myOscilloscope1.connect(Tone.Master);
-myOscilloscope2.connect(Tone.Master);
-myOscilloscope3.connect(Tone.Master);
-
-myOscilloscope1.lineColor = "#FFFF00";
-myOscilloscope2.lineColor = "#FFFF00";
-myOscilloscope3.lineColor = "#FFFF00";
+scope1.connect(Tone.Master);
+scope2.connect(Tone.Master);
+scope3.connect(Tone.Master);
+scope4.connect(Tone.Master);
 
 var sineOsc = new Tone.Oscillator({
 	frequency: 440, 
 	type: "sine",
 	volume: -12
-}).connect(myOscilloscope1);
+}).connect(scope1);
 
 var sawOsc = new Tone.Oscillator({
 	frequency: 440,
 	volume: -12
-}).connect(myOscilloscope2);
+}).connect(scope2);
 
 var phaseOsc1 = new Tone.Oscillator({
 	frequency: 440,
 	volume: -12
-}).connect(myOscilloscope3);
+}).connect(scope3);
 
 var phaseOsc2 = new Tone.Oscillator({
 	frequency: 440,
 	volume: -12
-}).connect(myOscilloscope3);
+}).connect(scope3);
+
+var beatOsc1 = new Tone.Oscillator({
+	type: "sine",
+	frequency: 440,
+	volume: -12
+}).connect(scope4);
+
+var beatOsc2 = new Tone.Oscillator({
+	type: "sine",
+	frequency: 441,
+	volume: -12
+}).connect(scope4);
+
 
 nx.onload = function(){
 	nx.sendsTo("js");
@@ -45,13 +56,15 @@ nx.onload = function(){
 	phaseSlider.hslider = true;
 	phaseSlider.draw();
 	
+	beatFreqNumber.decimalPlaces = 0;
+	
 	sineFreqSlider.set({
 		value: 0.330
 	}, true);
 	
 	sineVolSlider.set({
 		value: 0.8
-	}, true)
+	}, true);
 	
 	sawPartialNumber.set({
 		value: 1
@@ -59,6 +72,10 @@ nx.onload = function(){
 	
 	phaseSlider.set({
 		value: 0
+	}, true);
+	
+	beatFreqNumber.set({
+		value: 1
 	}, true);
 	
 	sineToggle.on('*', function(data){
@@ -125,10 +142,23 @@ nx.onload = function(){
 		}
 	});
 
-	
 	phaseSlider.on('*', function(data){
 		var phase = Math.ceil(data.value * 180);
 		phaseOsc2.phase = phase;
 		document.getElementById("phaseLabel").innerHTML = phase + "&deg; Out of Phase";
-	})
+	});
+	
+	beatToggle.on('*', function(data){
+		if (data.value == 1){
+			beatOsc1.start();
+			beatOsc2.start();
+		}else if (data.value == 0){
+			beatOsc1.stop();
+			beatOsc2.stop();
+		}
+	});
+	
+	beatFreqNumber.on('*', function(data){
+		beatOsc2.frequency.value = beatOsc1.frequency.value + data.value;
+	});
 }
